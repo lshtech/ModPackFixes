@@ -5,6 +5,7 @@
 --- MOD_DESCRIPTION: Compatibility between this and other mods
 --- BADGE_COLOUR: 3c099b
 --- PREFIX: mpf
+--- PRIORITY: -100
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -65,6 +66,32 @@ function Game:splash_screen()
 				}))
 			end,
 		})
+
+		SMODS.Joker:take_ownership('j_cry-soccer', {
+			add_to_deck = function(self, card, from_debuff) 
+				card.ability.extra.holygrail = math.floor(card.ability.extra.holygrail)
+				G.jokers.config.card_limit = G.jokers.config.card_limit + card.ability.extra.holygrail
+				G.consumeables.config.card_limit = G.consumeables.config.card_limit + card.ability.extra.holygrail
+				G.hand:change_size(card.ability.extra.holygrail)
+				change_booster_amount(card.ability.extra.holygrail)
+				change_shop_size(card.ability.extra.holygrail)
+			end,
+			remove_from_deck = function(self, card, from_debuff)
+				G.jokers.config.card_limit = G.jokers.config.card_limit - card.ability.extra.holygrail
+				G.consumeables.config.card_limit = G.consumeables.config.card_limit - card.ability.extra.holygrail
+				G.hand:change_size(-card.ability.extra.holygrail)
+				change_booster_amount(card.ability.extra.holygrail * -1)
+				change_shop_size(card.ability.extra.holygrail * -1)
+			end,
+		})
+		SMODS.Joker:take_ownership('j_cry-booster', {
+			add_to_deck = function(self, card, from_debuff)
+				change_booster_amount(card.ability.extra.booster_slots)
+			end,
+			remove_from_deck = function(self, card, from_debuff)
+				change_booster_amount(card.ability.extra.booster_slots * -1)
+			end,
+		})
 	end
 	if (SMODS.Mods["BetmmaVouchers"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
 		SMODS.Voucher:take_ownership('v_betm_vouchers_3d_boosters', {
@@ -81,6 +108,40 @@ function Game:splash_screen()
 				return
 			end
 			bunco_set_debuffRef(self, card)
+		end
+
+		function change_booster_amount(mod)
+			if not G.GAME.shop then return end
+			G.GAME.shop.booster_max = G.GAME.shop.booster_max + mod
+			if G.shop_jokers and G.shop_jokers.cards then
+				if mod < 0 then
+					--Remove jokers in shop
+					for i = #G.shop_booster.cards, G.GAME.shop.booster_max + 1, -1 do
+						if G.shop_booster.cards[i] then
+							G.shop_booster.cards[i]:remove()
+						end
+					end
+				end
+				G.shop_booster.config.card_limit = G.GAME.shop.booster_max
+				G.shop:recalculate()
+				if mod > 0 then
+					for i = 1, G.GAME.shop.booster_max - #G.shop_booster.cards do
+						G.GAME.current_round.used_packs = G.GAME.current_round.used_packs or {}
+						if not G.GAME.current_round.used_packs[i] then
+							G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
+						end
+						
+						if G.GAME.current_round.used_packs[i] ~= 'USED' then 
+							local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
+							G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
+							create_shop_card_ui(card, 'Booster', G.shop_booster)
+							card:start_materialize()
+							G.shop_booster:emplace(card)
+							card:align()
+						end
+					end
+				end
+			end
 		end
 	end
 	
