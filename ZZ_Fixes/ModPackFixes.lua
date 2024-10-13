@@ -2,7 +2,7 @@
 --- MOD_NAME: ModPackFixes
 --- MOD_ID: modpackfixes
 --- MOD_AUTHOR: [elbe]
---- MOD_DESCRIPTION: Compatibility between this and other mods
+--- MOD_DESCRIPTION: Compatibility between various mods and random fixes I find
 --- BADGE_COLOUR: 3c099b
 --- PREFIX: mpf
 --- PRIORITY: -100
@@ -363,65 +363,6 @@ function Game:splash_screen()
 				end
 				if total_rank > 0 then
 					ease_dollars(total_rank)
-				end
-			end
-		})
-	end
-
-	if (SMODS.Mods["BBBalatro"] or {}).can_load then
-		SMODS.Joker:take_ownership('j_wokerjoker', {
-			calculate = function(self, card, context)        --define calculate functions here
-				if context.individual and context.cardarea == G.play and not context.blueprint then
-					if context.other_card:get_id() == 11 or context.other_card:get_id() == 13 or next(find_joker("Pareidolia")) then
-						local suit_prefix = SMODS.Suits[context.other_card.base.suit].card_key ..'_'
-						context.other_card:set_base(G.P_CARDS[suit_prefix .. 'Q'])
-						return {
-							message = localize { "Wokified" }
-						}
-					end
-				end
-			end,
-		})
-		SMODS.Joker:take_ownership('j_zipperjoker', {
-			calculate = function(self, card, context)             --define calculate functions here
-				if card.ability.extra.flip == nil then
-					card.ability.extra.flip = 1
-				end
-				if context.individual and context.cardarea == G.play and not context.blueprint then
-					if next(context.poker_hands["Pair"]) or next(context.poker_hands["Four Of A Kind"]) or next(context.poker_hands["Two Pair"]) then
-						local suit_prefix = SMODS.Suits[context.other_card.base.suit].card_key ..'_'
-						local rank_prefix = context.other_card:get_id() + card.ability.extra.flip
-						if rank_prefix > 10 then
-							if rank_prefix > 11 then
-								if rank_prefix > 12 then
-									if rank_prefix > 13 then
-										if rank_prefix > 14 then
-											rank_prefix = '2'
-										else
-											rank_prefix = 'A'
-										end
-									else
-										rank_prefix = 'K'
-									end
-								else
-									rank_prefix = 'Q'
-								end
-							else
-								rank_prefix = 'J'
-							end
-						elseif rank_prefix <= 1 then
-							rank_prefix = 'A'
-						end
-						context.other_card:set_base(G.P_CARDS[suit_prefix .. rank_prefix])
-						if card.ability.extra.flip > 0 then
-							card.ability.extra.flip = card.ability.extra.flip - 2
-						else
-							card.ability.extra.flip = card.ability.extra.flip + 2
-						end
-						return {
-							message = localize { "Split!" }
-						}
-					end
 				end
 			end
 		})
@@ -856,11 +797,6 @@ function Game:splash_screen()
 		})
 	end
 end
-
-
-
-
-
 
 ----------------------------------------------
 ------------MOD CODE END----------------------
