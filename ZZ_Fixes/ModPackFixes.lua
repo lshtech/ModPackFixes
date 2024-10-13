@@ -77,19 +77,19 @@ function Game:splash_screen()
 				delay(0.5)
 			end,
 		})
-	end
 
-	if (SMODS.Mods["ceres"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
-		SMODS.Voucher:take_ownership('v_cere_overflow_norm', {
-			redeem = function(self)
-				change_booster_amount(1)
-			end
-		})
-		SMODS.Voucher:take_ownership('v_cere_overflow_plus', {
-			redeem = function(self)
-				change_booster_amount(1)
-			end
-		})
+		if (SMODS.Mods["Bunco"] or {}).can_load then
+			SMODS.Voucher:take_ownership('v_cere_overflow_norm', {
+				redeem = function(self)
+					change_booster_amount(1)
+				end
+			})
+			SMODS.Voucher:take_ownership('v_cere_overflow_plus', {
+				redeem = function(self)
+					change_booster_amount(1)
+				end
+			})
+		end
 	end
 
 	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
@@ -219,33 +219,6 @@ function Game:splash_screen()
 		})
 	end
 
-	if (SMODS.Mods["JokerDisplay"] or {}).can_load and (SMODS.Mods["TWEWY"] or {}).can_load then
-		JokerDisplay.Definitions["j_twewy_aquaMonster"] = {
-			reminder_text = {
-				{ text = "("},
-				{
-					ref_table = "card.joker_display_values",
-					ref_value = "active_text",
-				},
-				{ text = ")"},
-			},
-		
-			calc_function = function(card)
-				local hand = next(G.play.cards) and G.play.cards or G.hand.highlighted
-				local text, poker_hands, scoring_hand = JokerDisplay.evaluate_hand(hand)
-		
-				card.joker_display_values.active = poker_hands and poker_hands["Three of a Kind"] and next(poker_hands["Three of a Kind"]) and true or false
-				card.joker_display_values.active_text = card.joker_display_values.active and "Active!" or "Inactive"
-			end,
-		
-			style_function = function(card, text, reminder_text, extra)
-				if reminder_text and reminder_text.children[2] then
-					reminder_text.children[2].config.colour = card.joker_display_values.active and G.C.GREEN or G.C.UI.TEXT_INACTIVE
-				end
-			end,
-		}
-	end
-
 	if (SMODS.Mods["Annum"] or {}).can_load then
 		SMODS.Joker:take_ownership('j_annum_key_kiwi', {
 			calculate = function(card, self, context)
@@ -363,69 +336,6 @@ function Game:splash_screen()
 				end
 				if total_rank > 0 then
 					ease_dollars(total_rank)
-				end
-			end
-		})
-	end
-
-	if (SMODS.Mods["Buffoonery"] or {}).can_load then
-		SMODS.Joker:take_ownership('j_buf_memcard', {
-			loc_vars = function(self, info_queue, card)
-				return {
-					vars = {card.ability.suit, 
-							card.ability.rank, 
-							card.ability.mcount,
-							card.ability.tsuit, 
-							card.ability.trank
-					}
-				}
-			end,
-			calculate = function(self, card, context)
-				-- MEMORIZE FIRST SCORING CARD
-				if context.before and G.GAME.current_round.hands_played == 0 then
-					if card.ability.mcount < 8 then  --limits to 8 cards memorized
-						card.ability.mcount = card.ability.mcount + 1 
-						card.ability.cards[card.ability.mcount] = context.scoring_hand[1]	--see Strength code @ card.lua [UPDATE]:changed from local variable to table value, in order to store card edition and/or enhancement.
-						local _card = context.scoring_hand[1]	                            
-						card.ability.tsuit = _card.base.suit
-						card.ability.suit[card.ability.mcount] = SMODS.Suits[_card.base.suit].card_key ..'_'
-						card.ability.rank[card.ability.mcount] = _card.base.id
-						if card.ability.rank[card.ability.mcount] < 10 then card.ability.rank[card.ability.mcount] = tostring(card.ability.rank[card.ability.mcount])
-						elseif card.ability.rank[card.ability.mcount] == 10 then card.ability.rank[card.ability.mcount] = 'T'
-						elseif card.ability.rank[card.ability.mcount] == 11 then card.ability.rank[card.ability.mcount] = 'J'
-						elseif card.ability.rank[card.ability.mcount] == 12 then card.ability.rank[card.ability.mcount] = 'Q'
-						elseif card.ability.rank[card.ability.mcount] == 13 then card.ability.rank[card.ability.mcount] = 'K'
-						elseif card.ability.rank[card.ability.mcount] == 14 then card.ability.rank[card.ability.mcount] = 'A'
-						end
-						card.ability.trank = card.ability.rank[card.ability.mcount]..' of '
-						return {
-							message = "Memorized!",
-							colour = G.C.GREEN 
-						}
-					elseif card.ability.mcount >= 8 then
-						return {
-							message = "Memory Full!",
-							colour = G.C.RED
-						}
-					end
-				end
-				
-				-- CONVERT INTO MEMORIZED CARDS WHEN SELLING
-				if context.selling_self then
-					local j = math.min((card.ability.mcount), 8) -- prevents getting a nil value for suit[i] and rank[i]
-					if j > 0 then
-						for i = 1, j do
-							G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function()
-								local hcard = G.hand.cards[i]
-								local mcard = card.ability.cards[i]
-								copy_card(mcard, hcard)
-								G.hand.cards[i]:flip();play_sound('tarot2', percent, 0.6);G.hand.cards[i]:juice_up(0.3, 0.3);G.hand.cards[i]:flip(); -- Animation stuff
-								return true 
-							end }))
-						end
-					else
-						return true
-					end
 				end
 			end
 		})
@@ -748,6 +658,33 @@ function Game:splash_screen()
 				end
 			end
 		})
+
+		if (SMODS.Mods["JokerDisplay"] or {}).can_load then
+			JokerDisplay.Definitions["j_twewy_aquaMonster"] = {
+				reminder_text = {
+					{ text = "("},
+					{
+						ref_table = "card.joker_display_values",
+						ref_value = "active_text",
+					},
+					{ text = ")"},
+				},
+			
+				calc_function = function(card)
+					local hand = next(G.play.cards) and G.play.cards or G.hand.highlighted
+					local text, poker_hands, scoring_hand = JokerDisplay.evaluate_hand(hand)
+			
+					card.joker_display_values.active = poker_hands and poker_hands["Three of a Kind"] and next(poker_hands["Three of a Kind"]) and true or false
+					card.joker_display_values.active_text = card.joker_display_values.active and "Active!" or "Inactive"
+				end,
+			
+				style_function = function(card, text, reminder_text, extra)
+					if reminder_text and reminder_text.children[2] then
+						reminder_text.children[2].config.colour = card.joker_display_values.active and G.C.GREEN or G.C.UI.TEXT_INACTIVE
+					end
+				end,
+			}
+		end
 	end
 	
 	if (SMODS.Mods["ThemedJokers"] or {}).can_load then
