@@ -1,0 +1,14 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Juice Issues
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "func = (function() effects[ii].card:juice_up(0.7);return true end)"
+position = "at"
+payload = "func = (function() if effects[ii].card and effects[ii].card.juice_up then effects[ii].card:juice_up(0.7) end;return true end)"
+match_indent = true
+overwrite = true
