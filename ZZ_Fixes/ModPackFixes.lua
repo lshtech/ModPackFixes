@@ -16,7 +16,7 @@ function Game:splash_screen()
  	splash_screenRef(self)
 
 	SMODS.current_mod = mod
-	
+
 	if (SMODS.Mods["ceres"] or {}).can_load then
 		SMODS.Joker:take_ownership('j_cere_accountant', {
 			loc_vars = function(self, info_queue, card)
@@ -153,9 +153,9 @@ function Game:splash_screen()
 		local bunco_set_debuffRef = SMODS.Mods["Bunco"].set_debuff
 		function SMODS.Mods.Bunco.set_debuff(card)
 			if not G.jokers then
-				return
+				return false
 			end
-			bunco_set_debuffRef(self, card)
+			bunco_set_debuffRef(card)
 		end
 
 		function change_booster_amount(mod)
@@ -192,7 +192,7 @@ function Game:splash_screen()
 			end
 		end
 	end
-	
+
 	if (SMODS.Mods["Jestobiology"] or {}).can_load then
 		SMODS.Joker:take_ownership('j_jesto_typography', {
 			calculate = function(self, context)
@@ -253,7 +253,7 @@ function Game:splash_screen()
 			end,
 		})
 	end
-	
+
 	if (SMODS.Mods["JankJonklersMod"] or {}).can_load then
 		SMODS.Joker:take_ownership('j_jank_lieutenant', {
 			calculate = function(self, card, context)
@@ -290,7 +290,7 @@ function Game:splash_screen()
 			end
 		})
 	end
-	
+
 	if (SMODS.Mods["KCVanilla"] or {}).can_load then
 		local function kcv_get_suit_prefix(card)
 			local suit_prefix = SMODS.Suits[card.base.suit].card_key
@@ -405,54 +405,7 @@ function Game:splash_screen()
 			end
 		})
 	end
-	
-	if (SMODS.Mods["MikasMods"] or {}).can_load then
-		SMODS.Joker:take_ownership('j_mmc_plus_one', {
-			loc_vars = function(self, info_queue, card)
-				return {
-					vars = { card.ability.extra.increase }
-				}
-			end,
-			calculate = function(self, card, context)
-				-- Upgrade ranks of first hand
-				if context.individual and context.cardarea == G.play then
-					if G.GAME.current_round.hands_played == 0 then
-						G.E_MANAGER:add_event(Event({
-							trigger = "after",
-							delay = 0.0,
-							func = (function()
-								-- Increase rank
-								local _card = context.other_card
-								local suit_prefix = SMODS.Suits[_card.base.suit].card_key .. "_"
-								local rank_suffix = _card.base.id == 14 and 2 or math.min(_card.base.id + 1, 14)
-								if rank_suffix < 10 then
-									rank_suffix = tostring(rank_suffix)
-								elseif rank_suffix == 10 then
-									rank_suffix = "T"
-								elseif rank_suffix == 11 then
-									rank_suffix = "J"
-								elseif rank_suffix == 12 then
-									rank_suffix = "Q"
-								elseif rank_suffix == 13 then
-									rank_suffix = "K"
-								elseif rank_suffix == 14 then
-									rank_suffix = "A"
-								end
-								_card:set_base(G.P_CARDS[suit_prefix .. rank_suffix])
-								-- Show message
-								card_eval_status_text(card, "extra", nil, nil, nil, {
-									message = localize("k_upgrade_ex"),
-									instant = true
-								})
-								return true
-							end)
-						}))
-					end
-				end
-			end
-		})
-	end
-	
+
 	if (SMODS.Mods["TWEWY"] or {}).can_load then
 		SMODS.Joker:take_ownership('j_twewy_loveMeTether', {
 			loc_vars = function(self, info_queue, center)
@@ -531,7 +484,7 @@ function Game:splash_screen()
 			}
 		end
 	end
-	
+
 	if (SMODS.Mods["ThemedJokers"] or {}).can_load then
 		local function random(prob,total)
 			-- This function returns true with a (prob) in (total) chance
