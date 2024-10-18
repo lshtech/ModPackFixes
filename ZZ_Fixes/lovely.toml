@@ -31,3 +31,21 @@ match_indent = true
 payload = '''
 if (id > 0 and rank and rank.face) or next(find_joker("Pareidolia")) then
 '''
+
+# compat between cryptid and bonus blinds
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''elseif G.consumeables.cards[1] then'''
+position = "after"
+payload = '''
+local eligibleJokers = {}
+for i = 1, #G.consumeables.cards do
+    if G.consumeables.cards[i].ability.consumeable then
+        eligibleJokers[#eligibleJokers + 1] = G.consumeables.cards[i]
+    end
+end
+if #eligibleJokers == 0 then
+    return
+end'''
+match_indent = true
