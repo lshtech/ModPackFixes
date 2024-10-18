@@ -92,6 +92,28 @@ function Game:splash_screen()
 		end
 	end
 
+	if (SMODS.Mods["Oiimanaddition"] or {}).can_load and (SMODS.Mods["Pokermon"] or {}).can_load then
+		-- Renames Oiiman's Pink Seal to Fuschia Seal if Pokermon is installed
+		G.localization.descriptions.Other["oiim_pinkseal_seal"].name = "Fuchsia Seal"
+		G.localization.misc.labels["oiim_pinkseal_seal"] = "Fuchsia Seal"
+	end
+
+	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["ceres"] or {}).can_load then
+		-- Renames Cryptid's Green Seal to Code Seal if Ceres is installed
+		G.localization.descriptions.Other["cry_green_seal"].name = "Code Seal"
+		G.localization.descriptions.Back["b_cry_source_deck"].text = {
+			"All cards have a {C:cry_code}Code Seal{}",
+			"Cards cannot change seals",
+		}
+		G.localization.descriptions.Spectral["c_cry_source"].text = {
+			"Add a {C:cry_code}Code Seal{}",
+			"to {C:attention}#1#{} selected",
+			"card in your hand",
+		}
+		G.localization.misc.labels["cry_green_seal"] = "Code Seal"
+		init_localization()
+	end
+
 	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
 		SMODS.Voucher:take_ownership('v_cry_overstock_multi', {
 			loc_vars = function(self, info_queue)
