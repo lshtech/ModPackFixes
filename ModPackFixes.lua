@@ -313,7 +313,7 @@ function Game:splash_screen()
 		})
 	end
 
-	if (SMODS.Mods["KCVanilla"] or {}).can_load then
+	if (SMODS.Mods["KCVanilla"] or {}).can_load and false then
 		local function kcv_get_suit_prefix(card)
 			local suit_prefix = SMODS.Suits[card.base.suit].card_key
 			return suit_prefix
@@ -554,15 +554,73 @@ function Game:splash_screen()
 		})
 	end
 
-	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["GRM"] or {}).can_load and (SMODS.Mods["CheesyJokers"] or {}).can_load then
+	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["GRM"] or {}).can_load and (SMODS.Mods["CheesyJokers"] or {}).can_load and false then
 		local cgi_ref = Card.get_id
 		function Card:get_id()
 			local id = cgi_ref(self)
 			if self.config.center.key == "c_base" then
-				return nil
+				return 0
 			end
 			return id
 		end
+	end
+
+	if (SMODS.Mods["CheesyJokers"] or {}).can_load then
+		SMODS.Joker:take_ownership('j_cj_treasure_map', {
+            loc_vars = function(self, info_queue, card)
+				return { vars = {
+					localize(G.GAME.current_round.treasure_card.rank1, 'ranks'),
+					localize(G.GAME.current_round.treasure_card.rank2, 'ranks'),
+					card.ability.extra
+				} }
+			end,
+			calculate = function(self, card, context)
+				if context.before and context.cardarea == G.jokers then
+					local count_rank1 = 0
+					local count_rank2 = 0
+					for i = 1, #context.scoring_hand do
+						print(tprint(context))
+						if context.scoring_hand[i]:get_id() == G.GAME.current_round.treasure_card.id1 then 
+							count_rank1 = count_rank1 + 1 
+						elseif next(find_joker("Facial Recognition")) and 
+						context.scoring_hand[i]:is_face() and (
+						(G.GAME.current_round.treasure_card.id1 == 11) or 
+						(G.GAME.current_round.treasure_card.id1 == 12) or 
+						(G.GAME.current_round.treasure_card.id1 == 13)) then
+							count_rank1 = count_rank1 + 1 
+						end
+		
+						if context.scoring_hand[i]:get_id() == G.GAME.current_round.treasure_card.id2 then 
+							count_rank2 = count_rank2 + 1 
+						elseif next(find_joker("Facial Recognition")) and 
+						context.scoring_hand[i]:is_face() and (
+						(G.GAME.current_round.treasure_card.id2 == 11) or 
+						(G.GAME.current_round.treasure_card.id2 == 12) or 
+						(G.GAME.current_round.treasure_card.id2 == 13)) then
+							count_rank2 = count_rank2 + 1 
+						end
+					end
+		
+					local give_money = false
+					if G.GAME.current_round.treasure_card.id1 == G.GAME.current_round.treasure_card.id2 then
+						give_money = (count_rank1 >= 2)
+					else
+						give_money = (count_rank1 >= 1 and count_rank2 >= 1)
+					end
+						
+					if give_money then
+						ease_dollars(card.ability.extra)
+						G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + card.ability.extra
+						G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
+						return {
+							message = localize('$')..card.ability.extra,
+							dollars = card.ability.extra,
+							colour = G.C.MONEY
+						}
+					end
+				end
+			end
+		})
 	end
 end
 
