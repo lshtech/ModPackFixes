@@ -579,7 +579,6 @@ function Game:splash_screen()
 					local count_rank1 = 0
 					local count_rank2 = 0
 					for i = 1, #context.scoring_hand do
-						print(tprint(context))
 						if context.scoring_hand[i]:get_id() == G.GAME.current_round.treasure_card.id1 then 
 							count_rank1 = count_rank1 + 1 
 						elseif next(find_joker("Facial Recognition")) and 
