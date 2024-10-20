@@ -10,10 +10,47 @@
 ----------------------------------------------
 ------------MOD CODE -------------------------
 local mod = SMODS.current_mod
+
+if not CenterBlacklist then
+	CenterBlacklist = {}
+end
+
+--[[
+	if you want to use the blacklist copy the following into your lua file and then add your keys to table.insert statements
+
+if not CenterBlacklist then
+	CenterBlacklist = {}
+end
+
+table.insert(CenterBlacklist, "j_joker_key")
+
+]]
+
 local splash_screenRef = Game.splash_screen
 
 function Game:splash_screen()
  	splash_screenRef(self)
+
+	for _,c in ipairs(CenterBlacklist) do
+		if G.P_CENTERS[c] then
+			print("found " .. c)
+			for k,_ in pairs(G.P_CENTER_POOLS) do
+				for i = #G.P_CENTER_POOLS[k], 1, -1 do
+					if G.P_CENTER_POOLS[k][i] == G.P_CENTERS[c] then
+						print("removing " .. c .. " from G.P_CENTER_POOLS[" .. k .. "]")
+						table.remove(G.P_CENTER_POOLS[k], i)
+					end
+				end
+			end
+		end
+	end
+
+	 for i = #G.P_CENTER_POOLS["Booster"], 1, -1 do
+		local entry = G.P_CENTER_POOLS["Booster"][i]
+		if string.find(entry.key, "p_oiim_conditional") then
+		--	table.remove(G.P_CENTER_POOLS["Booster"], i)
+		end
+	end
 
 	SMODS.current_mod = mod
 
