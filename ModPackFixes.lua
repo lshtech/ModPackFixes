@@ -553,6 +553,17 @@ function Game:splash_screen()
 			end,
 		})
 	end
+
+	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["GRM"] or {}).can_load and (SMODS.Mods["CheesyJokers"] or {}).can_load then
+		local cgi_ref = Card.get_id
+		function Card:get_id()
+			local id = cgi_ref(self)
+			if self.config.center.key == "c_base" then
+				return nil
+			end
+			return id
+		end
+	end
 end
 
 ----------------------------------------------
