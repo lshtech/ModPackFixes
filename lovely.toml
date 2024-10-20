@@ -61,3 +61,14 @@ payload = '''
 if (G.GAME.current_round.hands_left <= 0 or #G.hand.highlighted <= (G.GAME.blind and G.GAME.blind.name == 'cry-Sapphire Stamp' and 1 or 0) or G.GAME.blind.block_play) and not (group_size > 5) then
 '''
 match_indent = true
+
+#a bit of a hack to get past the rank error
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''function Card:is_face(from_boss)'''
+position = 'after'
+payload = '''
+if not SMODS.Ranks[self.base.value] then return end
+'''
+match_indent = true
