@@ -57,10 +57,10 @@ function Game:splash_screen()
 
 	if (SMODS.Mods["ceres"] or {}).can_load then
 		if G.P_CENTERS['j_cere_accountant'] then
-			is_discovered = G.P_CENTERS['j_cere_accountant'].discoverd
+			is_discovered = G.P_CENTERS['j_cere_accountant'].discovered
 		end
 		SMODS.Joker:take_ownership('j_cere_accountant', {
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			loc_vars = function(self, info_queue, card)
 				return {vars = {card.ability.extra, card.ability.mult_mod}}
 			end,
@@ -86,10 +86,10 @@ function Game:splash_screen()
 			end,
 		})
 		if G.P_CENTERS['c_cere_reversed_strength'] then
-			is_discovered = G.P_CENTERS['c_cere_reversed_strength'].discoverd
+			is_discovered = G.P_CENTERS['c_cere_reversed_strength'].discovered
 		end
 		SMODS.Consumable:take_ownership('c_cere_reversed_strength',{
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			use = function(self, card, area, copier)
 				G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 					play_sound('tarot1')
@@ -126,19 +126,19 @@ function Game:splash_screen()
 
 		if (SMODS.Mods["Bunco"] or {}).can_load then
 			if G.P_CENTERS['v_cere_overflow_norm'] then
-				is_discovered = G.P_CENTERS['v_cere_overflow_norm'].discoverd
+				is_discovered = G.P_CENTERS['v_cere_overflow_norm'].discovered
 			end
 			SMODS.Voucher:take_ownership('v_cere_overflow_norm', {
-				discoverd = is_discovered,
+				discovered = is_discovered,
 				redeem = function(self)
 					change_booster_amount(1)
 				end
 			})
 			if G.P_CENTERS['v_cere_overflow_plus'] then
-				is_discovered = G.P_CENTERS['v_cere_overflow_plus'].discoverd
+				is_discovered = G.P_CENTERS['v_cere_overflow_plus'].discovered
 			end
 			SMODS.Voucher:take_ownership('v_cere_overflow_plus', {
-				discoverd = is_discovered,
+				discovered = is_discovered,
 				redeem = function(self)
 					change_booster_amount(1)
 				end
@@ -170,10 +170,10 @@ function Game:splash_screen()
 
 	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
 		if G.P_CENTERS['v_cry_overstock_multi'] then
-			is_discovered = G.P_CENTERS['v_cry_overstock_multi'].discoverd
+			is_discovered = G.P_CENTERS['v_cry_overstock_multi'].discovered
 		end
 		SMODS.Voucher:take_ownership('v_cry_overstock_multi', {
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			loc_vars = function(self, info_queue)
 				return { vars = { math.max(1, math.floor(self.config.extra)) } }
 			end,
@@ -189,10 +189,10 @@ function Game:splash_screen()
 		})
 
 		if G.P_CENTERS['j_cry_soccer'] then
-			is_discovered = G.P_CENTERS['j_cry_soccer'].discoverd
+			is_discovered = G.P_CENTERS['j_cry_soccer'].discovered
 		end
 		SMODS.Joker:take_ownership('j_cry_soccer', {
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			loc_vars = function(self, info_queue, center)
 				return { vars = { center.ability.extra.holygrail } }
 			end,
@@ -213,7 +213,7 @@ function Game:splash_screen()
 			end,
 		})
 		if G.P_CENTERS['j_cry_booster'] then
-			is_discovered = G.P_CENTERS['j_cry_booster'].discoverd
+			is_discovered = G.P_CENTERS['j_cry_booster'].discovered
 		end
 		SMODS.Joker:take_ownership('j_cry_booster', {
 			loc_vars = function(self, info_queue, center)
@@ -230,10 +230,10 @@ function Game:splash_screen()
 
 	if (SMODS.Mods["BetmmaVouchers"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
 		if G.P_CENTERS['v_betm_vouchers_3d_boosters'] then
-			is_discovered = G.P_CENTERS['v_betm_vouchers_3d_boosters'].discoverd
+			is_discovered = G.P_CENTERS['v_betm_vouchers_3d_boosters'].discovered
 		end
 		SMODS.Voucher:take_ownership('v_betm_vouchers_3d_boosters', {
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			redeem = function(self)
 				change_booster_amount(1)
 			end
@@ -286,10 +286,10 @@ function Game:splash_screen()
 
 	if (SMODS.Mods["Jestobiology"] or {}).can_load then
 		if G.P_CENTERS['j_jesto_typography'] then
-			is_discovered = G.P_CENTERS['j_jesto_typography'].discoverd
+			is_discovered = G.P_CENTERS['j_jesto_typography'].discovered
 		end
 		SMODS.Joker:take_ownership('j_jesto_typography', {
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			calculate = function(self, context)
 				if context.other_joker and context.full_hand and (context.other_joker.config.center.rarity == 1 or context.other_joker.config.center.rarity == 5) and self ~= context.other_joker then
 					local CheckForFaces = true
@@ -316,10 +316,10 @@ function Game:splash_screen()
 
 	if (SMODS.Mods["JankJonklersMod"] or {}).can_load then
 		if G.P_CENTERS['j_jank_lieutenant'] then
-			is_discovered = G.P_CENTERS['j_jank_lieutenant'].discoverd
+			is_discovered = G.P_CENTERS['j_jank_lieutenant'].discovered
 		end
 		SMODS.Joker:take_ownership('j_jank_lieutenant', {
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			calculate = function(self, card, context)
 				if context.individual and context.cardarea == G.play then
 					if context.scoring_name == "High Card" then
@@ -407,10 +407,10 @@ function Game:splash_screen()
 		end
 
 		if G.P_CENTERS['j_Themed_CA-Recruiter'] then
-			is_discovered = G.P_CENTERS['j_Themed_CA-Recruiter'].discoverd
+			is_discovered = G.P_CENTERS['j_Themed_CA-Recruiter'].discovered
 		end
 		SMODS.Joker:take_ownership('j_Themed_CA-Recruiter', {
-			discoverd = is_discovered,
+			discovered = is_discovered,
 			loc_vars = function(self, info_queue, card)
 				if G.GAME then
 					return {vars = {G.GAME.probabilities.normal or 1, card.ability.extra.Odds}}
