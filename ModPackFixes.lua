@@ -241,6 +241,23 @@ function Game:splash_screen()
 	end
 
 	if (SMODS.Mods["Bunco"] or {}).can_load then
+		SMODS.Joker:take_ownership("j_bunc_critic", {
+			calculate = function(self, card, context)
+        if context.joker_main then
+            local temp_chips = to_number(G.GAME.blind.chips)
+            if math.floor(to_number(hand_chips) * mult) < (temp_chips / card.ability.extra.fraction) then return {
+                Xmult_mod = card.ability.extra.xmult,
+                card = card,
+                message = localize {
+                    type = 'variable',
+                    key = 'a_xmult',
+                    vars = { card.ability.extra.xmult }
+                },
+            } end
+        end
+    end
+		})
+
 		local bunco_set_debuffRef = SMODS.Mods["Bunco"].set_debuff
 		function SMODS.Mods.Bunco.set_debuff(card)
 			if not G.jokers then
@@ -430,6 +447,52 @@ function Game:splash_screen()
 							card = context.blueprint_card or card
 						}
 					end
+				end
+			end,
+		})
+	end
+
+	if (SMODS.Mods["BBBalatro"] or {}).can_load then
+		SMODS.Joker:take_ownership('j_zipperjoker', {
+			loc_vars = function(self, info_queue, card)
+				return {vars = { card.ability.extra.mult, card.ability.extra.x_mult, card.ability.extra.flip }}
+			end,
+			calculate = function(self,card,context)
+				if context.individual and context.cardarea == G.play and not context.blueprint and context.poker_hands then
+						if next(context.poker_hands["Pair"]) or next(context.poker_hands["Four Of A Kind"]) or next(context.poker_hands["Two Pair"]) then
+								local suit_prefix = SMODS.Suits[context.other_card.base.suit].card_key .. '_'
+								local rank_prefix = context.other_card:get_id() + card.ability.extra.flip
+								if rank_prefix > 10 then
+										if rank_prefix > 11 then
+												if rank_prefix > 12 then
+														if rank_prefix > 13 then
+																if rank_prefix > 14 then
+																		rank_prefix = '2'
+																else
+																		rank_prefix = 'A'
+																end
+														else
+																rank_prefix = 'K'
+														end
+												else
+														rank_prefix = 'Q'
+												end
+										else
+												rank_prefix = 'J'
+										end
+								elseif rank_prefix <= 1 then
+										rank_prefix = 'A'
+								end
+								context.other_card:set_base(G.P_CARDS[suit_prefix .. rank_prefix])
+								if card.ability.extra.flip > 0 then
+									card.ability.extra.flip = card.ability.extra.flip - 2
+								else
+									card.ability.extra.flip = card.ability.extra.flip + 2
+								end
+								return {
+										message = localize { "Split!" }
+								}
+						end
 				end
 			end,
 		})
