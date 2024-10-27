@@ -497,6 +497,13 @@ function Game:splash_screen()
 			end,
 		})
 	end
+
+	if (SMODS.Mods["SnowMods"] or {}).can_load then
+		Dice[1] = "j_oops"
+		Dice[2] = "j_snow_oops_all_glorbsDice"
+		ProbabilityObjects[1] = "j_oops"
+		ProbabilityObjects[2] = "j_snow_oops_all_glorbsDice"
+	end
 end
 
 ----------------------------------------------
