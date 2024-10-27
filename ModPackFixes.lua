@@ -498,11 +498,8 @@ function Game:splash_screen()
 		})
 	end
 
-	if (SMODS.Mods["SnowMods"] or {}).can_load then
-		Dice[1] = "j_oops"
-		Dice[2] = "j_snow_oops_all_glorbsDice"
-		ProbabilityObjects[1] = "j_oops"
-		ProbabilityObjects[2] = "j_snow_oops_all_glorbsDice"
+	if (SMODS.Mods["Othermod"] or {}).can_load then
+		G.P_CENTERS['c_othe_joker_juice'].atlas = 'othe_joker_juice'
 	end
 end
 
