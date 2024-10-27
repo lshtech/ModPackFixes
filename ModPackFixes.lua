@@ -453,7 +453,11 @@ function Game:splash_screen()
 	end
 
 	if (SMODS.Mods["BBBalatro"] or {}).can_load then
+		if G.P_CENTERS['j_zipperjoker'] then
+			is_discovered = G.P_CENTERS['j_zipperjoker'].discovered
+		end
 		SMODS.Joker:take_ownership('j_zipperjoker', {
+			discovered = is_discovered,
 			loc_vars = function(self, info_queue, card)
 				return {vars = { card.ability.extra.mult, card.ability.extra.x_mult, card.ability.extra.flip }}
 			end,
@@ -500,6 +504,80 @@ function Game:splash_screen()
 
 	if (SMODS.Mods["Othermod"] or {}).can_load then
 		G.P_CENTERS['c_othe_joker_juice'].atlas = 'othe_joker_juice'
+	end
+
+	if (SMODS.Mods["robalatro"] or {}).can_load then
+		SMODS.Consumable:take_ownership("c_robl_sword",{
+			can_use = function(self,card)
+					if card.ability.extra.currentuses > 0 then
+							if G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK then
+									if card.ability.consumable.mod_num >= #G.hand.highlighted + (card.area == G.hand and -1 or 0) and #G.hand.highlighted + (card.area == G.hand and -1 or 0) >= 1 then
+											return true
+									end
+							end
+					end
+			end,
+			use = function(self,card,area,copier)
+					if #G.hand.highlighted == card.ability.consumable.mod_num then
+							if pseudorandom('sword') < G.GAME.probabilities.normal*2/3 then
+									local destroyed_cards = {}
+									for i=#G.hand.highlighted, 1, -1 do
+											destroyed_cards[#destroyed_cards+1] = G.hand.highlighted[i]
+									end
+									G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+											return true end }))
+									G.E_MANAGER:add_event(Event({
+											trigger = 'after',
+											delay = 0.2,
+											func = function() 
+													for i=#G.hand.highlighted, 1, -1 do
+															local card = G.hand.highlighted[i]
+															if card.ability.name == 'Glass Card' then 
+																	card:shatter()
+															else
+																	card:start_dissolve(nil, i == #G.hand.highlighted)
+															end
+													end
+													play_sound('robl_SwordSwing', 1, 1)
+													return true end }))
+							else
+									G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+											attention_text({
+													text = 'Miss :(',
+													scale = 1.3, 
+													hold = 1.4,
+													major = card,
+													backdrop_colour = G.C.MONEY,
+													align = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK) and 'tm' or 'cm',
+													offset = {x = 0, y = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK) and -0.2 or 0},
+													silent = true
+													})
+													G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.06*G.SETTINGS.GAMESPEED, blockable = false, blocking = false, func = function()
+															play_sound('robl_SwordSwing', 0.5, 1);return true end}))
+															play_sound('robl_SwordSwing', 1.5, 1)
+													card:juice_up(0.3, 0.5)
+									return true end }))
+							end
+					elseif #G.hand.highlighted == 1 or card.ability.consumable.mod_num ~= 2 then
+							local _card = copy_card(G.hand.highlighted[1], nil, nil, G.playing_card)
+							_card:add_to_deck()
+							G.deck.config.card_limit = G.deck.config.card_limit + 1
+							table.insert(G.playing_cards, _card)
+							G.hand:emplace(_card)
+							_card:set_ability(G.P_CENTERS.c_base, nil, true)
+							_card.states.visible = nil
+											
+							G.E_MANAGER:add_event(Event({
+									func = function()
+											_card:start_materialize()
+											play_sound('robl_SwordLunge', 1, 1)
+											return true
+									end
+											}))
+					end
+					card.ability.extra.currentuses = card.ability.extra.currentuses - 1
+			end
+		})
 	end
 end
 
