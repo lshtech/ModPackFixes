@@ -579,6 +579,20 @@ function Game:splash_screen()
 			end
 		})
 	end
+	
+	if (SMODS.Mods["SnowMods"] or {}).can_load then
+		SMODS.Joker:take_ownership("j_snow_clover",{
+			loc_vars = function(self, info_queue, card)
+					return { vars = {card.ability.extra.odds, '' .. (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.money, card.ability.extra.submon} }
+			end,
+			add_to_deck = function(self, card, from_debuff)
+					G.GAME.round_resets.reroll_cost = G.GAME.round_resets.reroll_cost - card.ability.extra.money
+			end,
+			remove_from_deck = function(self, card, from_debuff)
+					G.GAME.round_resets.reroll_cost = G.GAME.round_resets.reroll_cost + card.ability.extra.money
+			end
+		})
+	end
 end
 
 ----------------------------------------------
