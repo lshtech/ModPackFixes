@@ -216,6 +216,7 @@ function Game:splash_screen()
 			is_discovered = G.P_CENTERS['j_cry_booster'].discovered
 		end
 		SMODS.Joker:take_ownership('j_cry_booster', {
+			discovered = is_discovered,
 			loc_vars = function(self, info_queue, center)
 				return { vars = { center.ability.extra.booster_slots } }
 			end,
@@ -241,7 +242,11 @@ function Game:splash_screen()
 	end
 
 	if (SMODS.Mods["Bunco"] or {}).can_load then
+		if G.P_CENTERS['j_bunc_critic'] then
+			is_discovered = G.P_CENTERS['j_bunc_critic'].discovered
+		end
 		SMODS.Joker:take_ownership("j_bunc_critic", {
+			discovered = is_discovered,
 			calculate = function(self, card, context)
         if context.joker_main then
             local temp_chips = to_number(G.GAME.blind.chips)
@@ -507,7 +512,11 @@ function Game:splash_screen()
 	end
 
 	if (SMODS.Mods["robalatro"] or {}).can_load then
+		if G.P_CENTERS['c_robl_sword'] then
+			is_discovered = G.P_CENTERS['c_robl_sword'].discovered
+		end
 		SMODS.Consumable:take_ownership("c_robl_sword",{
+			discovered = is_discovered,
 			can_use = function(self,card)
 					if card.ability.extra.currentuses > 0 then
 							if G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK then
@@ -581,7 +590,11 @@ function Game:splash_screen()
 	end
 	
 	if (SMODS.Mods["SnowMods"] or {}).can_load then
+		if G.P_CENTERS['j_snow_clover'] then
+			is_discovered = G.P_CENTERS['j_snow_clover'].discovered
+		end
 		SMODS.Joker:take_ownership("j_snow_clover",{
+			discovered = is_discovered,
 			loc_vars = function(self, info_queue, card)
 					return { vars = {card.ability.extra.odds, '' .. (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.money, card.ability.extra.submon} }
 			end,
