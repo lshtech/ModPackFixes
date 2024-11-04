@@ -11,6 +11,10 @@
 ------------MOD CODE -------------------------
 local mod = SMODS.current_mod
 
+if not TypeBlacklist then
+	TypeBlacklist = {}
+end
+
 if not CenterBlacklist then
 	CenterBlacklist = {}
 end
@@ -24,12 +28,32 @@ end
 
 table.insert(CenterBlacklist, "j_joker_key")
 
+if not TypeBlacklist then
+	TypeBlacklist = {}
+end
+
+table.insert(TypeBlacklist, "Tarot")
+
 ]]
 
 local splash_screenRef = Game.splash_screen
 
 function Game:splash_screen()
  	splash_screenRef(self)
+
+	for _,t in ipairs(TypeBlacklist) do
+		for i, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
+			if v == t then
+					table.remove(SMODS.ConsumableType.ctype_buffer, i)
+			end
+		end
+
+		for k,c in pairs(G.P_CENTERS) do
+			if c.set == t then
+				table.insert(CenterBlacklist, k)
+			end
+		end
+	end
 
 	for _,c in ipairs(CenterBlacklist) do
 		if G.P_CENTERS[c] then
@@ -42,13 +66,6 @@ function Game:splash_screen()
 					end
 				end
 			end
-		end
-	end
-
-	 for i = #G.P_CENTER_POOLS["Booster"], 1, -1 do
-		local entry = G.P_CENTER_POOLS["Booster"][i]
-		if string.find(entry.key, "p_oiim_conditional") then
-		--	table.remove(G.P_CENTER_POOLS["Booster"], i)
 		end
 	end
 
