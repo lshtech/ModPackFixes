@@ -267,7 +267,7 @@ function Game:splash_screen()
 			calculate = function(self, card, context)
         if context.joker_main then
             local temp_chips = to_number(G.GAME.blind.chips)
-            if math.floor(to_number(hand_chips) * mult) < (temp_chips / card.ability.extra.fraction) then return {
+            if math.floor(to_number(hand_chips) * mult) < (to_number(temp_chips) / card.ability.extra.fraction) then return {
                 Xmult_mod = card.ability.extra.xmult,
                 card = card,
                 message = localize {
@@ -277,7 +277,17 @@ function Game:splash_screen()
                 },
             } end
         end
-    end
+    end,
+		loc_vars = function(self, info_queue, card)
+			local vars = {}
+			for _, kv_pair in ipairs({{xmult = 2}, {fraction = 5}}) do
+					-- kv_pair is {a = 1}
+					local k, v = next(kv_pair)
+					-- k is `a`, v is `1`
+					table.insert(vars, card.ability.extra[k])
+			end
+			return {vars = vars}
+		end,
 		})
 
 		local bunco_set_debuffRef = SMODS.Mods["Bunco"].set_debuff
