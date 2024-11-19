@@ -5,7 +5,7 @@
 --- MOD_DESCRIPTION: Compatibility between various mods and random fixes I find
 --- BADGE_COLOUR: 3c099b
 --- PREFIX: mpf
---- PRIORITY: -100
+--- PRIORITY: -999999999999999999999999
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -17,6 +17,14 @@ end
 
 if not CenterBlacklist then
 	CenterBlacklist = {}
+end
+
+if not ModWhitelist then
+	ModWhitelist = {}
+end
+
+if not CloneWhitelist then
+	CloneWhitelist = {"NumBalatro"}
 end
 
 --[[
@@ -34,12 +42,31 @@ end
 
 table.insert(TypeBlacklist, "Tarot")
 
+if not ModWhitelist then
+	ModWhitelist = {}
+end
+
+ModWhitelist["ModID"] = {}
+ModWhitelist["ModID"].types = {}
+table.insert(ModWhitelist["ModID"].types, "Joker")
+ModWhitelist["ModID"].centers = {}
+table.insert(ModWhitelist["ModID"].centers, "j_joker")
+
 ]]
 
 local splash_screenRef = Game.splash_screen
 
 function Game:splash_screen()
  	splash_screenRef(self)
+
+	for k,_ in pairs(ModWhitelist) do
+		if ModWhitelist[k].types then
+			
+		end
+		if ModWhitelist[k].centers then
+
+		end
+	end
 
 	for _,t in ipairs(TypeBlacklist) do
 		for i, v in ipairs(SMODS.ConsumableType.ctype_buffer) do
@@ -633,7 +660,47 @@ function Game:splash_screen()
 			end
 		})
 	end
-end
 
+	if (SMODS.Mods["Jestobiology"] or {}).can_load then
+		local old_g_funcs_check_for_buy_space = G.FUNCS.check_for_buy_space
+		G.FUNCS.check_for_buy_space = function(card)
+			if (card.ability.name == "Monday Menace" or card.ability.name == "Original Character") and card.ability.extra >= 1 then
+				return true
+			end
+			return old_g_funcs_check_for_buy_space(card)
+		end
+
+		local old_g_funcs_can_select_card = G.FUNCS.can_select_card
+		G.FUNCS.can_select_card = function(e)
+			if (e.config.ref_table.ability.name == "Monday Menace" or e.config.ref_table.ability.name == "Original Character") and e.config.ref_table.ability.extra >= 1 then 
+				e.config.colour = G.C.GREEN
+				e.config.button = 'use_card'
+			else
+				old_g_funcs_can_select_card(e)
+			end
+		end
+	end
+end
+--[[
+local SMODS_GameObject_take_ownership=SMODS.GameObject.take_ownership
+SMODS.GameObject.take_ownership =function(self, key, obj, silent)
+	print(key .. " | " .. SMODS.current_mod.id)
+	if SMODS.current_mod.id == 'NumBalatro' then
+		print("attempting to clone " .. key)
+		local orig_obj = SMODS.Centers[key]
+		if orig_obj and orig_obj.set == "Joker" then
+			orig_obj.mod = nil
+			orig_obj.registered = nil
+			orig_obj.original_key = nil
+			orig_obj.key = orig_obj.key:gsub("j_","numbuh_")
+			print(tprint2(orig_obj))
+			local new_obj = SMODS.Joker(orig_obj)
+			print(tprint2(new_obj))
+			key = new_obj.key
+		end
+	end
+	return SMODS_GameObject_take_ownership(self, key, obj, silent)
+end
+]]
 ----------------------------------------------
 ------------MOD CODE END----------------------
