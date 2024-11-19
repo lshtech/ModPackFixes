@@ -661,7 +661,7 @@ function Game:splash_screen()
 		})
 	end
 
-	if (SMODS.Mods["Jestobiology"] or {}).can_load then
+	if (SMODS.Mods["Jestobiology"] or {}).can_load or (SMODS.Mods["DeFused"] or {}).can_load then
 		local old_g_funcs_check_for_buy_space = G.FUNCS.check_for_buy_space
 		G.FUNCS.check_for_buy_space = function(card)
 			if (card.ability.name == "Monday Menace" or card.ability.name == "Original Character") and card.ability.extra >= 1 then
