@@ -54,36 +54,6 @@ table.insert(ModWhitelist["ModID"].centers, "j_joker")
 
 ]]
 
-if (SMODS.Mods["BB"] or {}).can_load then
-	local SMODS_Consumable_inject=SMODS.Consumable.inject
-	SMODS.Consumable.inject =function(self)
-			if self.set == "Bonus" then
-				if self.rarity == 1 then
-					self.rarity = "Common"
-				elseif self.rarity == 2 then
-					self.rarity = "Uncommon"
-				elseif self.rarity == 3 then
-					self.rarity = "Rare"
-				elseif self.rarity == 4 then
-					self.rarity = "Legendary"
-				end
-			end
-			return SMODS_Consumable_inject(self)
-	end
-
-	local SMODS_ConsumableType_inject=SMODS.ConsumableType.inject
-	SMODS.ConsumableType.inject = function(self)
-		if self.mod and self.mod.id == "BB" and self.key == "Bonus" then
-			self.rarities = {
-					{key = "Common", rate = 75},
-					{key = "Uncommon", rate = 20},
-					{key = "Rare", rate = 4},
-					{key = "Legendary", rate = 1},
-			}
-		end
-		return SMODS_ConsumableType_inject(self)
-	end
-end
 
 local splash_screenRef = Game.splash_screen
 
@@ -709,32 +679,6 @@ function Game:splash_screen()
 			else
 				old_g_funcs_can_select_card(e)
 			end
-		end
-	end
-
-	if (SMODS.Mods["BB"] or {}).can_load then
-		SMODS.Bonus.set_badges = function(self, card, badges)
-				local colours = {
-						HEX('FE5F55'),
-						HEX('8867a5'),
-						HEX("fda200"),
-						{0,0,0,1}
-				}
-				if G and G.C and G.C.DARK_EDITION then
-						colours[4] = G.C.DARK_EDITION
-				end
-				local names = {"Common", "Uncommon", "Rare", "Legendary"}
-				local rarity = 1
-				if self.rarity == "Uncommon" then
-					rarity = 2
-				elseif self.rarity == "Rare" then
-					rarity = 3
-				elseif self.rarity == "Legendary" then
-					rarity = 4
-				end
-				local len = string.len(names[rarity])
-				local size = 1.3 - (len > 5 and 0.02 * (len - 5) or 0)
-				badges[#badges + 1] = create_badge(names[rarity], colours[rarity], nil, size)
 		end
 	end
 end
