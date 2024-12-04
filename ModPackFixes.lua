@@ -15,8 +15,10 @@ if not TypeBlacklist then
 	TypeBlacklist = {}
 end
 
+--
+
 if not CenterBlacklist then
-	CenterBlacklist = {}
+	CenterBlacklist = {	}
 end
 
 if not ModWhitelist then
@@ -84,13 +86,20 @@ function Game:splash_screen()
 	end
 
 	for _,c in ipairs(CenterBlacklist) do
-		if G.P_CENTERS[c] then
-			print("found " .. c)
-			for k,_ in pairs(G.P_CENTER_POOLS) do
-				for i = #G.P_CENTER_POOLS[k], 1, -1 do
-					if G.P_CENTER_POOLS[k][i] == G.P_CENTERS[c] then
-						print("removing " .. c .. " from G.P_CENTER_POOLS[" .. k .. "]")
-						table.remove(G.P_CENTER_POOLS[k], i)
+		for _,t in ipairs{
+			G.P_CENTERS,
+			G.P_BLINDS,
+			G.P_TAGS,
+			G.P_SEALS,
+	} do
+			if t[c] then
+				print("found " .. c)
+				for k,_ in pairs(G.P_CENTER_POOLS) do
+					for i = #G.P_CENTER_POOLS[k], 1, -1 do
+						if G.P_CENTER_POOLS[k][i] == t[c] then
+							print("removing " .. c .. " from G.P_CENTER_POOLS[" .. k .. "]")
+							table.remove(G.P_CENTER_POOLS[k], i)
+						end
 					end
 				end
 			end
