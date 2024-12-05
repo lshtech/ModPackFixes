@@ -690,6 +690,14 @@ function Game:splash_screen()
 			end
 		end
 	end
+
+	if (SMODS.Mods["VSMODS"] or {}).can_load then
+		SMODS.Atlas:take_ownership("circus_a_circus_blinds",{
+			atlas_table = "ANIMATION_ATLAS",
+			frames = 1
+		})
+		G.ANIMATION_ATLAS["circus_a_circus_blinds"] = SMODS.Atlases["circus_a_circus_blinds"]
+	end
 end
 --[[
 local SMODS_GameObject_take_ownership=SMODS.GameObject.take_ownership
