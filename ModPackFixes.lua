@@ -26,8 +26,9 @@ if not ModWhitelist then
 end
 
 if not CloneWhitelist then
-	CloneWhitelist = {"NumBalatro"}
+	CloneWhitelist = {}
 end
+table.insert(CloneWhitelist, "NumBalatro")
 
 --[[
 	if you want to use the blacklist copy the following into your lua file and then add your keys to table.insert statements
@@ -699,26 +700,34 @@ function Game:splash_screen()
 		G.ANIMATION_ATLAS["circus_a_circus_blinds"] = SMODS.Atlases["circus_a_circus_blinds"]
 	end
 end
---[[
+
 local SMODS_GameObject_take_ownership=SMODS.GameObject.take_ownership
 SMODS.GameObject.take_ownership =function(self, key, obj, silent)
 	print(key .. " | " .. SMODS.current_mod.id)
 	if SMODS.current_mod.id == 'NumBalatro' then
 		print("attempting to clone " .. key)
-		local orig_obj = SMODS.Centers[key]
+		local orig_obj = copy_table(G.P_CENTERS[key])
 		if orig_obj and orig_obj.set == "Joker" then
-			orig_obj.mod = nil
-			orig_obj.registered = nil
-			orig_obj.original_key = nil
 			orig_obj.key = orig_obj.key:gsub("j_","numbuh_")
-			print(tprint2(orig_obj))
 			local new_obj = SMODS.Joker(orig_obj)
-			print(tprint2(new_obj))
-			key = new_obj.key
+			obj.key = new_obj.key
+			--print(tprint2(G.P_CENTERS[key]))
+			--print(tprint2(new_obj))
+			--print(tprint2(obj))
+
+			for k,_ in pairs(G.P_CENTER_POOLS) do
+				for i = #G.P_CENTER_POOLS[k], 1, -1 do
+					if G.P_CENTER_POOLS[k][i].key == key then
+						table.insert(G.P_CENTER_POOLS[k], new_obj)
+					end
+				end
+			end
+
+			return SMODS_GameObject_take_ownership(self, new_obj.key, obj, silent)
 		end
 	end
 	return SMODS_GameObject_take_ownership(self, key, obj, silent)
 end
-]]
+
 ----------------------------------------------
 ------------MOD CODE END----------------------
