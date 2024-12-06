@@ -701,20 +701,58 @@ function Game:splash_screen()
 	end
 end
 
+local function has_value(array, value)
+	if type(array) ~= 'table' or #array < 1 then
+		return false
+	end
+	for _,v in ipairs(array) do
+		if v == value then
+			return true
+		end
+	end
+	return false
+end
+
+function copy_table2(O, depth)
+  local O_type = type(O)
+  local copy
+	if depth == nil or type(depth) ~= "number" then
+		depth = 5
+	elseif depth == -1 then
+		return copy
+	end
+  if O_type == 'table' then
+      copy = {}
+      for k, v in next, O, nil do
+          copy[copy_table(k)] = copy_table2(v, depth - 1)
+      end
+      setmetatable(copy, copy_table2(getmetatable(O), depth - 1))
+  else
+      copy = O
+  end
+  return copy
+end
+
 local SMODS_GameObject_take_ownership=SMODS.GameObject.take_ownership
 SMODS.GameObject.take_ownership =function(self, key, obj, silent)
-	print(key .. " | " .. SMODS.current_mod.id)
-	if SMODS.current_mod.id == 'NumBalatro' then
+	--print(key .. " | " .. SMODS.current_mod.id)
+	if has_value(CloneWhitelist, SMODS.current_mod.id) then
 		print("attempting to clone " .. key)
-		local orig_obj = copy_table(G.P_CENTERS[key])
+		local orig_obj = copy_table2(G.P_CENTERS[key], 5)
 		if orig_obj and orig_obj.set == "Joker" then
-			orig_obj.key = orig_obj.key:gsub("j_","numbuh_")
+			orig_obj.key = orig_obj.key:gsub("j_",SMODS.current_mod.prefix .. "_")
+			orig_obj.mod = nil
+			orig_obj.registered = nil
+			--print(tprint2(G.P_CENTERS[orig_obj.key]))
 			local new_obj = SMODS.Joker(orig_obj)
 			obj.key = new_obj.key
+			if (SMODS.Mods["Aura"] or {}).can_load then
+				obj.atlas = G.P_CENTERS[key].atlas
+				obj.pos = G.P_CENTERS[key].pos
+			end
 			--print(tprint2(G.P_CENTERS[key]))
 			--print(tprint2(new_obj))
 			--print(tprint2(obj))
-
 			for k,_ in pairs(G.P_CENTER_POOLS) do
 				for i = #G.P_CENTER_POOLS[k], 1, -1 do
 					if G.P_CENTER_POOLS[k][i].key == key then
@@ -727,6 +765,16 @@ SMODS.GameObject.take_ownership =function(self, key, obj, silent)
 		end
 	end
 	return SMODS_GameObject_take_ownership(self, key, obj, silent)
+end
+
+if (SMODS.Mods["ortalab"] or {}).can_load and not (SMODS.Mods["malverk"] or {}).can_load then
+	function table.size(table)
+		local size = 0
+		for _,_ in pairs(table) do
+				size = size + 1
+		end
+		return size
+	end
 end
 
 ----------------------------------------------
