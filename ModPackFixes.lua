@@ -575,6 +575,10 @@ function Game:splash_screen()
 	if (SMODS.Mods["Othermod"] or {}).can_load then
 		G.P_CENTERS['c_othe_joker_juice'].atlas = 'othe_joker_juice'
 	end
+	
+	if (SMODS.Mods["jen"] or {}).can_load and Jen and Jen.config and Jen.config.bans then
+		Jen.config.bans = {}
+	end
 
 	if (SMODS.Mods["robalatro"] or {}).can_load then
 		if G.P_CENTERS['c_robl_sword'] then
