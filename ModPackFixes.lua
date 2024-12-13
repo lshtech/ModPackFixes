@@ -199,6 +199,19 @@ function Game:splash_screen()
 				end
 			})
 		end
+
+		if (SMODS.Mods["ouija"] or {}).can_load then
+			SMODS.Consumable:take_ownership('c_hex', {
+				loc_vars = function(_, info_queue, center)
+						if not center then
+								return
+						end
+						if not center.edition or (center.edition and not center.edition.cry_astral) then
+								info_queue[#info_queue + 1] = G.P_CENTERS.e_cry_astral
+						end
+				end
+			})
+		end
 	end
 
 	if (SMODS.Mods["Oiimanaddition"] or {}).can_load and (SMODS.Mods["Pokermon"] or {}).can_load then
