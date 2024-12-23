@@ -220,7 +220,7 @@ function Game:splash_screen()
 		G.localization.misc.labels["oiim_pinkseal_seal"] = "Fuchsia Seal"
 	end
 
-	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["ceres"] or {}).can_load then
+--[[	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["ceres"] or {}).can_load then
 		-- Renames Cryptid's Green Seal to Code Seal if Ceres is installed
 		G.localization.descriptions.Other["cry_green_seal"].name = "Code Seal"
 		G.localization.descriptions.Back["b_cry_source_deck"].text = {
@@ -234,7 +234,7 @@ function Game:splash_screen()
 		}
 		G.localization.misc.labels["cry_green_seal"] = "Code Seal"
 		init_localization()
-	end
+	end]]
 
 	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
 		if G.P_CENTERS['v_cry_overstock_multi'] then
