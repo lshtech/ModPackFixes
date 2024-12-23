@@ -318,7 +318,7 @@ function Game:splash_screen()
 			calculate = function(self, card, context)
         if context.joker_main then
             local temp_chips = to_number(G.GAME.blind.chips)
-            if math.floor(to_number(hand_chips) * mult) < (to_number(temp_chips) / card.ability.extra.fraction) then return {
+            if math.floor(to_number(hand_chips) * to_number(mult)) < (to_number(temp_chips) / to_number(card.ability.extra.fraction)) then return {
                 Xmult_mod = card.ability.extra.xmult,
                 card = card,
                 message = localize {
