@@ -220,21 +220,29 @@ function Game:splash_screen()
 		G.localization.misc.labels["oiim_pinkseal_seal"] = "Fuchsia Seal"
 	end
 
---[[	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["ceres"] or {}).can_load then
+	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["ceres"] or {}).can_load then
 		-- Renames Cryptid's Green Seal to Code Seal if Ceres is installed
-		G.localization.descriptions.Other["cry_green_seal"].name = "Code Seal"
-		G.localization.descriptions.Back["b_cry_source_deck"].text = {
-			"All cards have a {C:cry_code}Code Seal{}",
-			"Cards cannot change seals",
-		}
-		G.localization.descriptions.Spectral["c_cry_source"].text = {
-			"Add a {C:cry_code}Code Seal{}",
-			"to {C:attention}#1#{} selected",
-			"card in your hand",
-		}
-		G.localization.misc.labels["cry_green_seal"] = "Code Seal"
+		if G.localization.descriptions.Other["cry_green_seal"] then
+			G.localization.descriptions.Other["cry_green_seal"].name = "Code Seal"
+		end
+		if G.localization.descriptions.Back["b_cry_source_deck"] then
+			G.localization.descriptions.Back["b_cry_source_deck"].text = {
+				"All cards have a {C:cry_code}Code Seal{}",
+				"Cards cannot change seals",
+			}
+		end
+		if G.localization.descriptions.Spectral["c_cry_source"] then
+			G.localization.descriptions.Spectral["c_cry_source"].text = {
+				"Add a {C:cry_code}Code Seal{}",
+				"to {C:attention}#1#{} selected",
+				"card in your hand",
+			}
+		end
+		if G.localization.misc.labels["cry_green_seal"] then
+			G.localization.misc.labels["cry_green_seal"] = "Code Seal"
+		end
 		init_localization()
-	end]]
+	end
 
 	if (SMODS.Mods["Cryptid"] or {}).can_load and (SMODS.Mods["Bunco"] or {}).can_load then
 		if G.P_CENTERS['v_cry_overstock_multi'] then
