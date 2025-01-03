@@ -57,6 +57,13 @@ table.insert(ModWhitelist["ModID"].centers, "j_joker")
 
 ]]
 
+local function to_number(x)
+	if type(x) == 'table' and x.to_number then
+			return x:to_number()
+	end
+	return x
+end
+
 
 local splash_screenRef = Game.splash_screen
 
